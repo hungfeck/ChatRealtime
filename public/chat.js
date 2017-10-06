@@ -7,6 +7,7 @@ var output = document.getElementById("output");
 var feedback = document.getElementById("feedback");
 var $window = $(window);
 var btnAddUser = document.getElementById("addUser");
+var sendtohungfeck = document.getElementById("sendtohungfeck");
 
 
 // Keyboard events
@@ -20,13 +21,12 @@ $window.keydown(function (event) {
 btn.addEventListener("click",clickE);
 function clickE(event)
 {
-	socket.emit("chat",{message:message.value, handle:handle.value});
 	socket.emit('send', {message:message.value, handle:handle.value});
 }
 
 /****Add User****/
 btnAddUser.addEventListener("click",function(){
-	socket.emit("addUser", handle.value);
+	socket.emit("addUser", {username: handle.value, id: socket.id});
 })
 
 socket.on("addUser", function(data){
@@ -36,10 +36,13 @@ socket.on("addUser", function(data){
 /****End User****/
 
 /*****Remove User****/
+
+
 socket.on("disconnect", function(data){
 	
 })
 /*****End Remove User****/
+
 
 socket.on("message", function (data) {
 	if(data.handle != "")
@@ -58,11 +61,10 @@ socket.on("message", function (data) {
 
 message.addEventListener("keypress",function(){
 		socket.emit('typing',handle.value);
-		$window.close();
 	});
 socket.on("typing",function(data)
 {
-	feedback.innerHTML = '<p><em>' +dataRes+ 'is typing a message... </em></p>';
+	feedback.innerHTML = '<p><em>' +data+ 'is typing a message... </em></p>';
 });
 
 function close_window() {
@@ -71,6 +73,14 @@ function close_window() {
   }
 }
 
+// Send to hungfeck
+ sendtohungfeck.addEventListener("click",function(){
+	socket.emit("sendtohungfeck", {message: message.value, user: handle.value});
+})
+
+socket.on("sendtohungfeck", function(data){
+	output.innerHTML += '<p><strong>' +data.user+ ':</strong>'+ data.message +'</p>';
+});
 
 
 
