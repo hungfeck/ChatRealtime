@@ -8,7 +8,29 @@ var feedback = document.getElementById("feedback");
 var $window = $(window);
 var btnAddUser = document.getElementById("addUser");
 var sendtohungfeck = document.getElementById("sendtohungfeck");
+var announce = document.getElementById("announce");
 
+var timeout;
+
+// typing
+function timeoutFunction() {
+    socket.emit("typing", {username: '', status:false});
+}
+socket.on("typing",function(data)
+{
+	if(data.status)
+		feedback.innerHTML = '<p><em>' +data.username+ ' đang gõ... </em></p>';
+	else
+		feedback.innerHTML = '';
+});
+// message.addEventListener("keydown",function(){
+		// socket.emit('typing',handle.value);
+	// });
+$('.message').keyup(function() {
+    console.log('happening');
+    socket.emit('typing', {username: handle.value, status: true});
+    timeout = setTimeout(timeoutFunction, 2000);
+  });
 
 // Keyboard events
 $window.keydown(function (event) {
@@ -18,11 +40,15 @@ $window.keydown(function (event) {
 	}
 });
 
-btn.addEventListener("click",clickE);
-function clickE(event)
-{
+$('#send').click(function(){
 	socket.emit('send', {message:message.value, handle:handle.value});
-}
+});
+
+// btn.addEventListener("click",clickE);
+// function clickE(event)
+// {
+	// socket.emit('send', {message:message.value, handle:handle.value});
+// }
 
 /****Add User****/
 btnAddUser.addEventListener("click",function(){
@@ -31,7 +57,7 @@ btnAddUser.addEventListener("click",function(){
 
 socket.on("addUser", function(data){
 	output.innerHTML += '<center><p><strong>' +data.username+ '</strong> đã tham gia hội thoại</p></center>';
-	output.innerHTML += '<center><p>' +data.countUser+ ' người đang tham gia hội thoại</p></center>';
+	
 });
 /****End User****/
 
@@ -59,13 +85,14 @@ socket.on("message", function (data) {
 	}
 });
 
-message.addEventListener("keypress",function(){
-		socket.emit('typing',handle.value);
-	});
-socket.on("typing",function(data)
-{
-	feedback.innerHTML = '<p><em>' +data+ 'is typing a message... </em></p>';
+
+//typing
+
+//announce
+socket.on("announce",function(data){
+	announce.innerHTML = '<center><p>' +data+ ' người đang tham gia hội thoại</p></center>';
 });
+
 
 function close_window() {
   if (confirm("Close Window?")) {

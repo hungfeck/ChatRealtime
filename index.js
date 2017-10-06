@@ -17,10 +17,8 @@ io.on('connection', function (socket) {
 	// console.log('a user connected');
 	// console.log(socket.id);
 	socket.on('disconnect', function(){
-		console.log('user disconnected');
 	  });
 	socket.on('send', function (data) {
-		console.log(data.message);
         io.sockets.emit('message', data);
     });
 	socket.on('typing',function(data){
@@ -32,12 +30,11 @@ io.on('connection', function (socket) {
 		var datausernameSocket = {username: data.username,id: data.id};
 		usernameSocket.push(datausernameSocket);
 		io.sockets.emit('addUser', dataRes);
-		// console.log(usernameSocket);
+		io.sockets.emit('announce', allUser);
 	});
 	socket.on('sendtohungfeck',function(data){
 		// sending to individual socketid
 		var socketId = "";
-		console.log(usernameSocket);
 		usernameSocket.forEach(function(entry) {
 			if(entry.username == "hungfeck")
 			{
