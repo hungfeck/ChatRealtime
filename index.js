@@ -18,11 +18,18 @@ io.on('connection', function (socket) {
 	// console.log(socket.id);
 	socket.on('disconnect', function(){
 	  });
+	// socket.on('send', function (data) {
+        // io.sockets.emit('message', data);
+    // });
 	socket.on('send', function (data) {
-        io.sockets.emit('message', data);
+		io.to('room1').emit('message', data);
+        // io.sockets.emit('message', data);
     });
 	socket.on('typing',function(data){
-		socket.broadcast.emit("typing",data);
+		 //Cho tất cả
+		// socket.broadcast.emit("typing",data);
+		socket.broadcast.to('room1').emit("typing",data); // Cho những người trong room
+		
 	});
 	socket.on('addUser',function(data){
 		allUser += 1;
@@ -43,6 +50,11 @@ io.on('connection', function (socket) {
 			}
 		});
 		socket.broadcast.to(socketId).emit("sendtohungfeck",data);
+	});
+	// join room
+	socket.on('create', function(room) {
+		socket.join(room);
+		console.log('join room '+room);
 	});
 });
 

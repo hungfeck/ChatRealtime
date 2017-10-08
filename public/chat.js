@@ -11,6 +11,14 @@ var sendtohungfeck = document.getElementById("sendtohungfeck");
 var announce = document.getElementById("announce");
 
 var timeout;
+//join room
+var room = 'room'+randomIntFromInterval(1,2);
+alert(room);
+socket.emit('create', room);
+function randomIntFromInterval(min,max)
+{
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
 
 // typing
 function timeoutFunction() {
