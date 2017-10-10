@@ -9,16 +9,27 @@ var $window = $(window);
 var btnAddUser = document.getElementById("addUser");
 var sendtohungfeck = document.getElementById("sendtohungfeck");
 var announce = document.getElementById("announce");
-
 var timeout;
-//join room
-var room = 'room'+randomIntFromInterval(1,2);
-alert(room);
-socket.emit('create', room);
-function randomIntFromInterval(min,max)
-{
-    return Math.floor(Math.random()*(max-min+1)+min);
+
+//Login
+$('.btn_login').click(function(){
+	var username = $('.username').val();
+	var password = $('.password').val();
+	login(username, password);
+});
+function login(username, password, socketId){
+	socket.emit("login",{username: username,password: password, socketId: socket.id});
 }
+socket.on("login", function(data){
+	alert(JSON.stringify(data));
+});
+//join room
+// var room = 'room'+randomIntFromInterval(1,2);
+// socket.emit('create', room);
+// function randomIntFromInterval(min,max)
+// {
+    // return Math.floor(Math.random()*(max-min+1)+min);
+// }
 
 // typing
 function timeoutFunction() {
@@ -59,9 +70,9 @@ $('#send').click(function(){
 // }
 
 /****Add User****/
-btnAddUser.addEventListener("click",function(){
-	socket.emit("addUser", {username: handle.value, id: socket.id});
-})
+// btnAddUser.addEventListener("click",function(){
+	// socket.emit("addUser", {username: handle.value, id: socket.id});
+// })
 
 socket.on("addUser", function(data){
 	output.innerHTML += '<center><p><strong>' +data.username+ '</strong> đã tham gia hội thoại</p></center>';
@@ -109,9 +120,9 @@ function close_window() {
 }
 
 // Send to hungfeck
- sendtohungfeck.addEventListener("click",function(){
-	socket.emit("sendtohungfeck", {message: message.value, user: handle.value});
-})
+ // sendtohungfeck.addEventListener("click",function(){
+	// socket.emit("sendtohungfeck", {message: message.value, user: handle.value});
+// })
 
 socket.on("sendtohungfeck", function(data){
 	output.innerHTML += '<p><strong>' +data.user+ ':</strong>'+ data.message +'</p>';

@@ -4,6 +4,9 @@ var port = 3701;
 var socket = require('socket.io');
 var allUser = 0;
 var usernameSocket = [];
+var update = require('./js/update');
+const login = require('./js/login');
+const myModule = require('./js/hello');
 
 
 var server = app.listen(port);
@@ -16,6 +19,8 @@ io.on('connection', function (socket) {
 	// io.sockets.emit('message', { message: 'Welcome to the chat', handle: 'System' });
 	// console.log('a user connected');
 	// console.log(socket.id);
+	// var rtUpdate = update.update("59db1a9520092a4a6d66334c",1,1,1,1);
+	
 	socket.on('disconnect', function(){
 	  });
 	// socket.on('send', function (data) {
@@ -24,6 +29,15 @@ io.on('connection', function (socket) {
 	socket.on('send', function (data) {
 		io.to('room1').emit('message', data);
         // io.sockets.emit('message', data);
+    });
+	socket.on('login', function (data) {
+		// let val = myModule.hello(); // val is "Hello" 
+		// console.log(val);
+		let rtlogin = login.login(data.username, data.password);
+		console.log("after"+ rtlogin);
+		// var socketId = data.socketId;
+		// console.log(socketId);
+		// socket.emit('login', {username: String(rtLogin), socketId: data.socketId });
     });
 	socket.on('typing',function(data){
 		 //Cho tất cả
@@ -38,6 +52,7 @@ io.on('connection', function (socket) {
 		usernameSocket.push(datausernameSocket);
 		io.sockets.emit('addUser', dataRes);
 		io.sockets.emit('announce', allUser);
+		update.update(); 
 	});
 	socket.on('sendtohungfeck',function(data){
 		// sending to individual socketid
