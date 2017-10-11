@@ -26,8 +26,10 @@ io.on('connection', function (socket) {
 	socket.on('disconnect', function(){
 	  });
 	socket.on('send', function (data) {
-		io.to('room1').emit('message', data);
+		// io.to('room1').emit('message', data);
         // io.sockets.emit('message', data);
+		socket.emit('message',data);
+		console.log(data);
     });
 	socket.on('login', function (data) {
 		var retUsername = "";
@@ -58,7 +60,8 @@ io.on('connection', function (socket) {
 						socketId = element.socketId;
 					}
 				});
-				socket.emit("joinchat",data);
+				login.addConnectId(username,data.socketId); // Thêm 1 connectId mới
+				socket.emit("joinchat",{socketIdto: socketId, username: data.username});
 				// socket.broadcast.to(socketId).emit("joinchat",data);
 			}
 		});

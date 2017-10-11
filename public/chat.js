@@ -1,6 +1,8 @@
 // Initialize variables
 var socket = io.connect("http://localhost:3701");
-var message = document.getElementById("message");
+var message = document.getElementById("message-to-send").value;
+var m = $(".message").val();
+console.log(1111+m);
 var handle = document.getElementById("handle");
 var btn = document.getElementById("send");
 var output = document.getElementById("output");
@@ -10,7 +12,8 @@ var btnAddUser = document.getElementById("addUser");
 var sendtohungfeck = document.getElementById("sendtohungfeck");
 var announce = document.getElementById("announce");
 var timeout;
-var username = ""
+var username = "";
+var socketIdto = "";
 
 //Login
 $('.btn_login').click(function(){
@@ -45,6 +48,8 @@ socket.on("joinchat", function(data){
 	}
 	else{
 		$('.wrapper_login').css("display", "none");
+		socketIdto = data.socketIdto;
+		username = data.username;
 	}
 });
 
@@ -68,11 +73,12 @@ socket.on("typing",function(data)
 	else
 		feedback.innerHTML = '';
 });
-$('.message').keyup(function() {
-    console.log('happening');
-    socket.emit('typing', {username: handle.value, status: true});
-    timeout = setTimeout(timeoutFunction, 2000);
-  });
+
+// $('.message').keyup(function() {
+    // console.log('happening');
+    // socket.emit('typing', {username: handle.value, status: true});
+    // timeout = setTimeout(timeoutFunction, 2000);
+  // });
 
 // Keyboard events
 $window.keydown(function (event) {
@@ -83,12 +89,16 @@ $window.keydown(function (event) {
 });
 
 $('#send').click(function(){
-	socket.emit('send', {message:message.value, handle:handle.value});
+	
+	// alert("thông báo "+$('.message').val());
+	socket.emit('send', {message:m, handle:username});
 });
 socket.on("message", function (data) {
+	
 	if(data.handle != "")
 	{
         if(data.message) {
+			console.log('chat message');
             output.innerHTML += '<p><strong>' +data.handle+ ':</strong>'+ data.message +'</p>';
 			message.value = '';
         } else {
