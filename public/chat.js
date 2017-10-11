@@ -10,6 +10,7 @@ var btnAddUser = document.getElementById("addUser");
 var sendtohungfeck = document.getElementById("sendtohungfeck");
 var announce = document.getElementById("announce");
 var timeout;
+var username = ""
 
 //Login
 $('.btn_login').click(function(){
@@ -21,8 +22,33 @@ function login(username, password, socketId){
 	socket.emit("login",{username: username,password: password, socketId: socket.id});
 }
 socket.on("login", function(data){
-	alert(JSON.stringify(data));
+	if(data.username == null || data.username == "")
+	{
+		$('.loginfail').css("display", "block");
+	}
+	else{
+		$('.wrapper_login').css("display", "none");
+	}
 });
+// joinchat
+$('.btnJoin').click(function(){
+	var username = $('.username').val();
+	var phone = $('.phone').val();
+	joinchat(username, phone);
+});
+function joinchat(username, phone, socketId){
+	socket.emit("joinchat",{username: username,phone: phone, socketId: socket.id});
+}
+socket.on("joinchat", function(data){
+	if(data.username == null || data.username == "")
+	{
+	}
+	else{
+		$('.wrapper_login').css("display", "none");
+	}
+});
+
+
 //join room
 // var room = 'room'+randomIntFromInterval(1,2);
 // socket.emit('create', room);
@@ -42,9 +68,6 @@ socket.on("typing",function(data)
 	else
 		feedback.innerHTML = '';
 });
-// message.addEventListener("keydown",function(){
-		// socket.emit('typing',handle.value);
-	// });
 $('.message').keyup(function() {
     console.log('happening');
     socket.emit('typing', {username: handle.value, status: true});
@@ -62,12 +85,21 @@ $window.keydown(function (event) {
 $('#send').click(function(){
 	socket.emit('send', {message:message.value, handle:handle.value});
 });
+socket.on("message", function (data) {
+	if(data.handle != "")
+	{
+        if(data.message) {
+            output.innerHTML += '<p><strong>' +data.handle+ ':</strong>'+ data.message +'</p>';
+			message.value = '';
+        } else {
+            console.log("There is a problem:", data);
+        }
+	}
+	else{
+		alert("Please type your name!");
+	}
+});
 
-// btn.addEventListener("click",clickE);
-// function clickE(event)
-// {
-	// socket.emit('send', {message:message.value, handle:handle.value});
-// }
 
 /****Add User****/
 // btnAddUser.addEventListener("click",function(){
@@ -89,20 +121,7 @@ socket.on("disconnect", function(data){
 /*****End Remove User****/
 
 
-socket.on("message", function (data) {
-	if(data.handle != "")
-	{
-        if(data.message) {
-            output.innerHTML += '<p><strong>' +data.handle+ ':</strong>'+ data.message +'</p>';
-			message.value = '';
-        } else {
-            console.log("There is a problem:", data);
-        }
-	}
-	else{
-		alert("Please type your name!");
-	}
-});
+
 
 
 //typing
