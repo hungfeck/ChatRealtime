@@ -1,11 +1,11 @@
 // Initialize variables
-var socket = io.connect("http://localhost:3701");
+var socket = io.connect("http://10.103.18.35:3701");
 var message = document.getElementById("message-to-send").value;
-var m = $(".message").val();
-console.log(1111+m);
+var mess = "";
 var handle = document.getElementById("handle");
 var btn = document.getElementById("send");
 var output = document.getElementById("output");
+var listConnect = document.getElementById("listConnect");
 var feedback = document.getElementById("feedback");
 var $window = $(window);
 var btnAddUser = document.getElementById("addUser");
@@ -50,9 +50,22 @@ socket.on("joinchat", function(data){
 		$('.wrapper_login').css("display", "none");
 		socketIdto = data.socketIdto;
 		username = data.username;
+		$('.chat-with').html("Chat with "+data.chatto);
 	}
 });
-
+socket.on("addConnect", function(data){
+	var str = "";
+	str +=	'<li class="clearfix">';
+	str +=		'<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />';
+	str +=		'<div class="about">';
+    str +=        '<div class="name">'+data.username+'</div>';
+    str +=        '<div class="status">';
+	str +=		'<i class="fa fa-circle online"></i> online';
+    str +=        '</div>';
+	str +=		'</div>';
+	str +=		'</li>';
+	listConnect.innerHTML = str + listConnect.innerHTML;
+});
 
 //join room
 // var room = 'room'+randomIntFromInterval(1,2);
@@ -89,24 +102,53 @@ $window.keydown(function (event) {
 });
 
 $('#send').click(function(){
-	
-	// alert("thông báo "+$('.message').val());
-	socket.emit('send', {message:m, handle:username});
+	mess = $('textarea#message-to-send').val();
+	socket.emit('send', {message:mess, username:username, socketIdto: socketIdto});
 });
 socket.on("message", function (data) {
-	
-	if(data.handle != "")
+	if(data.username != "")
 	{
         if(data.message) {
-			console.log('chat message');
-            output.innerHTML += '<p><strong>' +data.handle+ ':</strong>'+ data.message +'</p>';
-			message.value = '';
+			var today = new Date();
+			var h = today.getHours();
+			var m = today.getMinutes();
+			var s = today.getSeconds();
+			var strOut = "";
+			strOut += 	'<li class="clearfix"> ';
+			strOut +=		'<div class="message-data align-right">';
+			strOut +=	  	'<span class="message-data-time" >'+ h +':'+ m +', Today</span> &nbsp; &nbsp;'; 
+			// strOut +=	 	'<span class="message-data-name" >Olia</span> <i class="fa fa-circle me"></i>';
+			strOut +=	 	'</div> ';
+			strOut +=	 	'<div class="message other-message float-right">'+data.message+'</div> ';
+			strOut += 	'</li> ';
+			output.innerHTML += strOut;
+			// message.value = '';
         } else {
             console.log("There is a problem:", data);
         }
 	}
 	else{
 		alert("Please type your name!");
+	}
+});
+socket.on("messageto", function (data) {
+	if(data.message) {
+		var today = new Date();
+		var h = today.getHours();
+		var m = today.getMinutes();
+		var s = today.getSeconds();
+		var strOut = "";
+		strOut += 	'<li> ';
+		strOut +=		'<div class="message-data">';
+		strOut +=			'<span class="message-data-name"><i class="fa fa-circle online"></i>'+data.username+'</span> ';
+		strOut +=	  	'	<span class="message-data-time" >'+ h +':'+ m +', Today</span> &nbsp; &nbsp;'; 
+		strOut +=	 	'</div> ';
+		strOut +=	 	'<div class="message my-message">'+data.message+'</div> ';
+		strOut += 	'</li> ';
+		output.innerHTML += strOut;
+		// message.value = '';
+	} else {
+		console.log("There is a problem:", data);
 	}
 });
 

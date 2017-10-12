@@ -29,7 +29,8 @@ io.on('connection', function (socket) {
 		// io.to('room1').emit('message', data);
         // io.sockets.emit('message', data);
 		socket.emit('message',data);
-		console.log(data);
+		console.log(data.socketIdto);
+		socket.broadcast.to(data.socketIdto).emit('messageto',data);
     });
 	socket.on('login', function (data) {
 		var retUsername = "";
@@ -61,8 +62,8 @@ io.on('connection', function (socket) {
 					}
 				});
 				login.addConnectId(username,data.socketId); // Thêm 1 connectId mới
-				socket.emit("joinchat",{socketIdto: socketId, username: data.username});
-				// socket.broadcast.to(socketId).emit("joinchat",data);
+				socket.emit("joinchat",{socketIdto: socketId, username: data.username, chatto: username});
+				socket.broadcast.to(socketId).emit("addConnect",data);
 			}
 		});
     });
