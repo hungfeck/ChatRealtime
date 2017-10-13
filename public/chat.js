@@ -1,5 +1,5 @@
 // Initialize variables
-var socket = io.connect("http://10.103.18.35:3701");
+var socket = io.connect("http://localhost:3701");
 var message = document.getElementById("message-to-send").value;
 var mess = "";
 var handle = document.getElementById("handle");
@@ -13,6 +13,7 @@ var sendtohungfeck = document.getElementById("sendtohungfeck");
 var announce = document.getElementById("announce");
 var timeout;
 var username = "";
+var usernameto = ""; //chat voi
 var socketIdto = "";
 
 //Login
@@ -31,6 +32,7 @@ socket.on("login", function(data){
 	}
 	else{
 		$('.wrapper_login').css("display", "none");
+		username = data.username;
 	}
 });
 // joinchat
@@ -55,7 +57,7 @@ socket.on("joinchat", function(data){
 });
 socket.on("addConnect", function(data){
 	var str = "";
-	str +=	'<li class="clearfix">';
+	str +=	'<li class="clearfix" onclick="switchChat(\''+data.socketId+'\',\''+data.username+'\')">';
 	str +=		'<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />';
 	str +=		'<div class="about">';
     str +=        '<div class="name">'+data.username+'</div>';
@@ -66,6 +68,10 @@ socket.on("addConnect", function(data){
 	str +=		'</li>';
 	listConnect.innerHTML = str + listConnect.innerHTML;
 });
+function switchChat(socketId,username){
+	socketIdto = socketId;
+	$('.chat-with').html("Chat with "+username);
+}
 
 //join room
 // var room = 'room'+randomIntFromInterval(1,2);
