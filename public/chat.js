@@ -70,8 +70,45 @@ socket.on("addConnect", function(data){
 });
 function switchChat(socketId,username){
 	socketIdto = socketId;
+	usernameto = username;
 	$('.chat-with').html("Chat with "+username);
+	socket.emit("switchChat",{socketIdto: socketId, mysocketId: socket.id}); // Lấy lịch sử
 }
+socket.on("switchChat", function(data){
+	var strAll = "";
+	if(data  != null){
+		data.forEach(function(e) {
+			if(e.from != socket.id)
+			{
+				// Khách
+				var strOut = "";
+				strOut += 	'<li> ';
+				strOut +=		'<div class="message-data">';
+				strOut +=			'<span class="message-data-name"><i class="fa fa-circle online"></i>'+usernameto+'</span> ';
+				strOut +=	  	'	<span class="message-data-time" > Today</span> &nbsp; &nbsp;'; 
+				strOut +=	 	'</div> ';
+				strOut +=	 	'<div class="message my-message">'+e.content+'</div> ';
+				strOut += 	'</li> ';
+				strAll += strOut;
+			}
+			else{
+					var strOut = "";
+					strOut += 	'<li class="clearfix"> ';
+					strOut +=		'<div class="message-data align-right">';
+					strOut +=	  	'<span class="message-data-time" > Today</span> &nbsp; &nbsp;'; 
+					// strOut +=	 	'<span class="message-data-name" >Olia</span> <i class="fa fa-circle me"></i>';
+					strOut +=	 	'</div> ';
+					strOut +=	 	'<div class="message other-message float-right">'+e.content+'</div> ';
+					strOut += 	'</li> ';
+					strAll += strOut;
+				}
+		});
+		output.innerHTML = strAll;
+	}
+	else{
+		output.innerHTML = strAll;
+	}
+});
 
 //join room
 // var room = 'room'+randomIntFromInterval(1,2);
@@ -109,8 +146,9 @@ $window.keydown(function (event) {
 
 $('#send').click(function(){
 	mess = $('textarea#message-to-send').val();
-	socket.emit('send', {message:mess, username:username, socketIdto: socketIdto});
+	socket.emit('send', {message:mess, username:username, socketIdto: socketIdto, mySocketId: socket.id });
 });
+// Chỉ cho người gửi
 socket.on("message", function (data) {
 	if(data.username != "")
 	{
@@ -137,24 +175,32 @@ socket.on("message", function (data) {
 		alert("Please type your name!");
 	}
 });
+// Cho đối tác
 socket.on("messageto", function (data) {
-	if(data.message) {
-		var today = new Date();
-		var h = today.getHours();
-		var m = today.getMinutes();
-		var s = today.getSeconds();
-		var strOut = "";
-		strOut += 	'<li> ';
-		strOut +=		'<div class="message-data">';
-		strOut +=			'<span class="message-data-name"><i class="fa fa-circle online"></i>'+data.username+'</span> ';
-		strOut +=	  	'	<span class="message-data-time" >'+ h +':'+ m +', Today</span> &nbsp; &nbsp;'; 
-		strOut +=	 	'</div> ';
-		strOut +=	 	'<div class="message my-message">'+data.message+'</div> ';
-		strOut += 	'</li> ';
-		output.innerHTML += strOut;
-		// message.value = '';
-	} else {
-		console.log("There is a problem:", data);
+	if(data.mySocketId == socketIdto)
+	{
+		if(data.message) {
+			var today = new Date();
+			var h = today.getHours();
+			var m = today.getMinutes();
+			var s = today.getSeconds();
+			var strOut = "";
+			strOut += 	'<li> ';
+			strOut +=		'<div class="message-data">';
+			strOut +=			'<span class="message-data-name"><i class="fa fa-circle online"></i>'+data.username+'</span> ';
+			strOut +=	  	'	<span class="message-data-time" >'+ h +':'+ m +', Today</span> &nbsp; &nbsp;'; 
+			strOut +=	 	'</div> ';
+			strOut +=	 	'<div class="message my-message">'+data.message+'</div> ';
+			strOut += 	'</li> ';
+			output.innerHTML += strOut;
+			// message.value = '';
+		} else {
+			console.log("There is a problem:", data);
+		}
+	}
+	else
+	{
+		alert("Có tin nhắn nhưng ko phải màn hình người này");
 	}
 });
 

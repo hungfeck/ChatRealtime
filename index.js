@@ -4,11 +4,10 @@ var port = 3701;
 var socket = require('socket.io');
 var allUser = 0;
 var usernameSocket = [];
-// var update = require('./js/update');
 const login = require('./js/login');
-// const myModule = require('./js/hello');
+const logchat = require('./js/logchat');
 
-
+    
 var server = app.listen(port);
 console.log("Listening on port " + port);
 app.use(express.static('public'));
@@ -21,16 +20,21 @@ io.on('connection', function (socket) {
 	// console.log('a user connected');
 	// console.log(socket.id);
 	// var rtUpdate = update.update("59db1a9520092a4a6d66334c",1,1,1,1);
-	
-	
+	    
+	socket.on('switchChat', function(data){
+		logchat.getLogChat(data.socketIdto, function(res){
+			socket.emit('switchChat',res);
+		});
+	});
 	socket.on('disconnect', function(){
 	  });
 	socket.on('send', function (data) {
 		// io.to('room1').emit('message', data);
         // io.sockets.emit('message', data);
 		socket.emit('message',data);
-		console.log(data.socketIdto);
 		socket.broadcast.to(data.socketIdto).emit('messageto',data);
+		console.log("data.mess "+data.mess);
+		logchat.addLogChat(data.mySocketId, data.socketIdto, data.message);
     });
 	socket.on('login', function (data) {
 		var retUsername = "";
