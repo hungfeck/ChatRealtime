@@ -52,12 +52,12 @@ socket.on("joinchat", function(data){
 		$('.wrapper_login').css("display", "none");
 		socketIdto = data.socketIdto;
 		username = data.username;
-		$('.chat-with').html("Chat with "+data.chatto);
+		$('.chat-with').html("Trò chuyện với "+data.chatto);
 	}
 });
 socket.on("addConnect", function(data){
 	var str = "";
-	str +=	'<li class="clearfix" onclick="switchChat(\''+data.socketId+'\',\''+data.username+'\')">';
+	str +=	'<li class="clearfix '+data.socketId+'" onclick="switchChat(\''+data.socketId+'\',\''+data.username+'\')">';
 	str +=		'<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />';
 	str +=		'<div class="about">';
     str +=        '<div class="name">'+data.username+'</div>';
@@ -68,10 +68,13 @@ socket.on("addConnect", function(data){
 	str +=		'</li>';
 	listConnect.innerHTML = str + listConnect.innerHTML;
 });
+socket.on("deleteConnect", function(data){
+	$('.'+data.connectId+'').remove();
+});
 function switchChat(socketId,username){
 	socketIdto = socketId;
 	usernameto = username;
-	$('.chat-with').html("Chat with "+username);
+	$('.chat-with').html("Trò chuyện với "+username);
 	socket.emit("switchChat",{socketIdto: socketId, mysocketId: socket.id}); // Lấy lịch sử
 }
 socket.on("switchChat", function(data){
@@ -147,12 +150,18 @@ $window.keydown(function (event) {
 $('#send').click(function(){
 	mess = $('textarea#message-to-send').val();
 	socket.emit('send', {message:mess, username:username, socketIdto: socketIdto, mySocketId: socket.id });
+	 $('textarea#message-to-send').val("");
 });
+// Tin nhắn tự động chỉ cho người gửi
+
+socket.on("automessage", function(data){
+	$('.wrapper_login').css("display", "none");
+	output.innerHTML = data.mess; 
+})
+
 // Chỉ cho người gửi
 socket.on("message", function (data) {
-	if(data.username != "")
-	{
-        if(data.message) {
+	if(data.message) {
 			var today = new Date();
 			var h = today.getHours();
 			var m = today.getMinutes();
@@ -161,7 +170,6 @@ socket.on("message", function (data) {
 			strOut += 	'<li class="clearfix"> ';
 			strOut +=		'<div class="message-data align-right">';
 			strOut +=	  	'<span class="message-data-time" >'+ h +':'+ m +', Today</span> &nbsp; &nbsp;'; 
-			// strOut +=	 	'<span class="message-data-name" >Olia</span> <i class="fa fa-circle me"></i>';
 			strOut +=	 	'</div> ';
 			strOut +=	 	'<div class="message other-message float-right">'+data.message+'</div> ';
 			strOut += 	'</li> ';
@@ -170,10 +178,6 @@ socket.on("message", function (data) {
         } else {
             console.log("There is a problem:", data);
         }
-	}
-	else{
-		alert("Please type your name!");
-	}
 });
 // Cho đối tác
 socket.on("messageto", function (data) {

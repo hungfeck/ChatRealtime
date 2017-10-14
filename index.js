@@ -23,10 +23,23 @@ io.on('connection', function (socket) {
 	    
 	socket.on('switchChat', function(data){
 		logchat.getLogChat(data.socketIdto, function(res){
-			socket.emit('switchChat',res);
+			socket.emit('switchChat',res); 
 		});
 	});
 	socket.on('disconnect', function(){
+		login.disconnect(socket.id, function(res)
+		{
+			console.log('')
+			if(res != null && res != "")
+			{
+				if(res != "1")
+				{
+					socket.broadcast.to(res[0].socketId).emit('deleteConnect',{connectId: socket.id});
+					console.log("Xoa class trong socketId "+res[0].socketId);  
+				}
+			}
+		}) ;   
+		console.log(socket.id);
 	  });
 	socket.on('send', function (data) {
 		// io.to('room1').emit('message', data);
@@ -46,7 +59,7 @@ io.on('connection', function (socket) {
 			}
 			socket.emit('login', {username: retUsername, socketId: data.socketId });
 		});
-    });
+    }); 
 	socket.on('joinchat', function (data) {
 		var retUsername = "";
 		login.checkUseradmin(function(res) {
@@ -68,6 +81,11 @@ io.on('connection', function (socket) {
 				login.addConnectId(username,data.socketId); // Thêm 1 connectId mới
 				socket.emit("joinchat",{socketIdto: socketId, username: data.username, chatto: username});
 				socket.broadcast.to(socketId).emit("addConnect",data);
+			}
+			else// không có admin online
+			{
+				var message = "Chúng tôi sẽ hiện nay không online. Bạn hãy để lại lời nhắn chúng tôi sẽ liên hệ với bạn sớm nhất";
+				socket.emit("automessage",{mess: message});
 			}
 		});
     });
