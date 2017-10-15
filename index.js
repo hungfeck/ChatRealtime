@@ -26,6 +26,7 @@ io.on('connection', function (socket) {
 			socket.emit('switchChat',res); 
 		});
 	});
+	
 	socket.on('disconnect', function(){
 		login.disconnect(socket.id, function(res)
 		{
@@ -84,15 +85,13 @@ io.on('connection', function (socket) {
 			}
 			else// không có admin online
 			{
-				var message = "Chúng tôi sẽ hiện nay không online. Bạn hãy để lại lời nhắn chúng tôi sẽ liên hệ với bạn sớm nhất";
+				var message = "Xin lỗi, hiện tại TT.CNTT không có ai trực tuyến. Bạn vui lòng để lại lời nhắn, chúng tôi sẽ hỗ trợ bạn sớm nhất!";
 				socket.emit("automessage",{mess: message});
 			}
 		});
     });
 	socket.on('typing',function(data){
-		 //Cho tất cả
-		// socket.broadcast.emit("typing",data);
-		socket.broadcast.to('room1').emit("typing",data); // Cho những người trong room
+		socket.broadcast.to(data.socketIdto).emit("typing",data); 
 		
 	});
 	socket.on('addUser',function(data){

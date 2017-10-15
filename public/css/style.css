@@ -24,6 +24,12 @@ body {
 .people-list .search {
   padding: 20px;
 }
+.newmess{
+	width: 20px;
+    background: orange;
+    text-align: center;
+    border-radius: 10px;
+}
 .people-list input {
   border-radius: 3px;
   border: none;
@@ -42,10 +48,13 @@ body {
   height: 770px;
 }
 .people-list ul li {
-  padding-bottom: 20px;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  border-radius: 10px;
 }
 .people-list img {
   float: left;
+  padding-left: 5px;
 }
 .people-list .about {
   float: left;
@@ -57,7 +66,9 @@ body {
 .people-list .status {
   color: #92959E;
 }
-
+.people-list .newmess{
+	float: right;
+}
 .chat {
   width: 490px;
   float: left;
@@ -95,7 +106,7 @@ body {
   padding: 30px 30px 20px;
   border-bottom: 2px solid white;
   overflow-y: scroll;
-  height: 375px;
+  height: 575px;
 }
 .chat .chat-history .message-data {
   margin-bottom: 15px;

@@ -15,7 +15,7 @@ module.exports = {
 			{
 				console.log('Connection established to', url);
 				var collection = db.collection('logchat');
-				collection.insert({"from": from, "to": to, "content": content, "commentDate": new Date(Date.now()).toISOString()}, function (err, numUpdated) {
+				collection.insert({"from": from, "to": to, "content": content, "commentDate": new Date()}, function (err, numUpdated) {
 					if (err) {
 					console.log(err);
 					} else if (numUpdated) {
