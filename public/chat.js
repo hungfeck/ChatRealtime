@@ -1,5 +1,5 @@
 // Initialize variables
-var socket = io.connect("http://localhost:3701");
+var socket = io.connect("10.103.18.35:3701");
 var message = document.getElementById("message-to-send").value;
 var mess = "";
 var handle = document.getElementById("handle");
@@ -32,6 +32,7 @@ socket.on("login", function(data){
 	}
 	else{
 		$('.wrapper_login').css("display", "none");
+		$('.chat-num-messages').html("Xin chào " + data.username);
 		username = data.username;
 	}
 });
@@ -52,13 +53,14 @@ socket.on("joinchat", function(data){
 		$('.wrapper_login').css("display", "none");
 		socketIdto = data.socketIdto;
 		username = data.username;
-		$('.chat-with').html("Trò chuyện với "+data.chatto);
+		$('.chat-with').html("Bạn đang trò chuyện với: "+data.chatto);
+		$('.chat-num-messages').html("Xin chào " + data.username);
 	}
 });
 socket.on("addConnect", function(data){
 	var str = "";
 	str +=	'<li class="clearfix '+data.socketId+'" onclick="switchChat(\''+data.socketId+'\',\''+data.username+'\')">';
-	str +=		'<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />';
+	str +=		'<img src="/img/man.png" width="55px" height="55px" alt="avatar" />';
 	str +=		'<div class="about">';
     str +=        '<div class="name">'+data.username+'</div>';
     str +=        '<div class="status">';
@@ -76,7 +78,7 @@ socket.on("deleteConnect", function(data){
 function switchChat(socketId,username){
 	socketIdto = socketId;
 	usernameto = username;
-	$('.chat-with').html("Trò chuyện với "+username);
+	$('.chat-with').html("Bạn đang trò chuyện với: "+username);
 	$('li.clearfix').css("background-color","#444753");
 	$('.'+socketId+'').css("background-color","gray");
 	$('.nm'+socketId+'').html("");
@@ -234,7 +236,7 @@ socket.on("messageto", function (data) {
 		$('.'+data.mySocketId+'').remove(); 
 		var str = "";
 		str +=	'<li class="clearfix '+data.mySocketId+'" onclick="switchChat(\''+data.mySocketId+'\',\''+data.username+'\')">';
-		str +=		'<img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />';
+		str +=		'<img src="/img/man.png" width="55px" height="55px" alt="avatar" />';
 		str +=		'<div class="about">';
 		str +=        '<div class="name">'+data.username+'</div>';
 		str +=        '<div class="status">';
